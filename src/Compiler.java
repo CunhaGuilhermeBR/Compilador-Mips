@@ -109,19 +109,104 @@ public class Compiler {
     public static int neg(int num){
         return num - (num*2);
     }
+
     public static int slt(String regs1, String regs2){
-        int val1 = findValue(regs1), val2 = findValue(regs2);
-        return (val1 < val2)? 1 : 0;
+        return (findValue(regs1) < findValue(regs2))? 1 : 0;
     }
 
+    public static int slti(String regs, int cons){
+        return (findValue(regs) < cons)? 1 : 0;
+    }
+
+    public static int xor(String regs1, String regs2){
+        return (findValue(regs1) != findValue(regs2))? 1 : 0;
+    }
+
+    public static int and(String regs1, String regs2){
+        if (findValue(regs1) == 1 && findValue(regs2) == 1)
+            return 1;
+        else
+            return 0;
+    }
+
+    public static int andi(String regs1, int cons){
+        if (findValue(regs1) == 1 && cons == 1)
+            return 1;
+        else
+            return 0;
+    }
+
+    public static int or(String regs1, String regs2){
+        if (findValue(regs1)  == 1  || findValue(regs2) ==1)
+            return 1;
+        else
+            return 0;
+    }
+
+    public static int ori(String regs1, int cons){
+        if (findValue(regs1)  == 1  || cons ==1)
+            return 1;
+        else
+            return 0;
+    }
+
+//    public static int nor (String regs1, String regs2){
+//        return (- (findValue(regs1) ==  findValue(regs2)))? 1 : 0;
+//    }
+
     private static int findValue(String name){
-        int value = 0;
-        switch (name){
-            case "t0": return getT0();
+            switch (name){
+                case "t0": return getT0();
 
-            case "t1": return getT1();
+                case "t1": return getT1();
 
-        }
-        return value;
+                case "t2": return getT2();
+
+                case "t3": return getT3();
+
+                case "t4": return getT4();
+
+                case "t5": return getT5();
+
+                case "t6": return getT6();
+
+                case "t7": return getT7();
+
+                case "t8": return getT8();
+
+                case "t9": return getT9();
+
+                case "s0": return getS0();
+
+                case "s1": return getS1();
+
+                case "s2": return getS2();
+
+                case "s3": return getS3();
+
+                case "s4": return getS4();
+
+                case "s5": return getS5();
+
+                case "s6": return getS6();
+
+                case "s7": return getS7();
+
+                case "zero": return getZero();
+
+                case "v0": return getV0();
+
+                case "v1": return getV1();
+
+                case "a0": return getA0();
+
+                case "a1": return getA1();
+
+                case "a2": return getA2();
+
+                case "a3": return getA3();
+            }
+        System.err.println("Entrada inválida");
+        return 0;
     }
 }
