@@ -1,5 +1,10 @@
 import data.FileSystem;
 
+import java.io.BufferedReader;
+import java.io.FileNotFoundException;
+import java.io.FileReader;
+import java.io.IOException;
+
 public class Compiler {
 
     private static int t0,t1,t2,t3,t4,t5,t6,t7,t8,t9;
@@ -112,49 +117,124 @@ public class Compiler {
 
     public static int slt(String regs1, String regs2){
         return (findValue(regs1) < findValue(regs2))? 1 : 0;
+        // Se o valor salvo no registrador 1 for menor do que o registrador 2 ele retorna 1
     }
 
     public static int slti(String regs, int cons){
         return (findValue(regs) < cons)? 1 : 0;
+        // Se o valor salvo no registrador 1 for menor do que a constante ele retorna 1
     }
 
     public static int xor(String regs1, String regs2){
         return (findValue(regs1) != findValue(regs2))? 1 : 0;
+        // Simula a porta lógica xor, onde retorna 1 se os valores forem diferentes
     }
 
     public static int and(String regs1, String regs2){
-        if (findValue(regs1) == 1 && findValue(regs2) == 1)
-            return 1;
-        else
-            return 0;
+        return  (findValue(regs1) == 1 && findValue(regs2) == 1) ? 1 : 0;
+        // Simula a porta and, onde se os dois valores forem 1 retorna 1.
     }
 
     public static int andi(String regs1, int cons){
-        if (findValue(regs1) == 1 && cons == 1)
-            return 1;
-        else
-            return 0;
+        return (findValue(regs1) == 1 && cons == 1)? 1 : 0 ;
+        // Simula a porta and, onde se os dois valores forem 1 retorna 1.É imediato por possuir um registrador e uma constante
     }
 
     public static int or(String regs1, String regs2){
-        if (findValue(regs1)  == 1  || findValue(regs2) ==1)
-            return 1;
-        else
-            return 0;
+        return  (findValue(regs1)  == 1  || findValue(regs2) ==1) ? 1 : 0 ;
+        // Simula a porta or, onde se algum dos valores for 1 retorna 1.
+
     }
 
     public static int ori(String regs1, int cons){
-        if (findValue(regs1)  == 1  || cons ==1)
-            return 1;
-        else
-            return 0;
+        return  (findValue(regs1)  == 1  || cons ==1) ? 1 : 0;
+        // Simula a porta or, onde se algum dos valores for 1 retorna 1. É imediato por possuir um registrador e uma constante
     }
 
-//    public static int nor (String regs1, String regs2){
-//        return (- (findValue(regs1) ==  findValue(regs2)))? 1 : 0;
-//    }
+    public static int nor (String regs1, String regs2){
+        return ((findValue(regs1) ==  findValue(regs2)))? 1 : 0;
+    }
+
+    public static int add(String regs1, String regs2) {
+        return findValue(regs1) + findValue(regs2); // Retorna a soma dos valores carregados nos registradores
+    }
+
+    public static int addi(String regs, int cons) {
+        return findValue(regs) + cons; // Retorna a soma dos valores carregado no registrador e a constante
+    }
+
+    public static int sub(String regs1, String regs2) {
+        return findValue(regs1) - findValue(regs2); // Retorna a subtração dos valores carregados nos registradores
+    }
+
+    public static int div(String regs1, String regs2) {
+        return findValue(regs1) / findValue(regs2); // Retorna a divisão dos valores carregados nos registradores
+    }
+
+    public static int mul(String regs1, String regs2) {
+        return findValue(regs1) * findValue(regs2); // Retorna a multiplicação dos valores carregados nos registradores
+    }
+
+    public static void nop(){}
+
+    public static int lw(String pos) throws IOException {
+       return Integer.parseInt(FileSystem.acess("valores.txt", splitString(pos)));
+    }
+
+    public static void sw(String regs, String pos) throws IOException{
+          FileSystem.writeWord("valores.txt", splitString(pos), findValue(regs));
+    }
+
+    private static int splitString(String pos){
+        int posicao =0;
+        String[] posQuebrada = pos.split("");
+        for(int i =0; i < posQuebrada.length; i++){
+            if (posQuebrada[i].equals("("))
+                posicao = i;
+        }
+        int cons = Integer.parseInt(pos.substring(0,posicao));
+        String resto = pos.substring(posicao +1, pos.length() -1);
+        if (resto.equalsIgnoreCase("zero"))
+            return cons;
+        else
+            return cons + findValue(resto);
+    }
+
+    public static void findOperation() throws IOException {
+        String line = "";
+
+        FileReader fi = new FileReader("codigo.txt");
+        BufferedReader reader = new BufferedReader(fi);
+        line = reader.readLine();
+        while (line != null) {
+            String[] posQuebrada = line.split(" " );
+            String oper = posQuebrada[0];
+            for (int i = 0 ; i < posQuebrada.length; i ++){
+                System.out.println("Na posição " + i + " tem " + posQuebrada[i]);
+            }
+            System.out.println("A operação é " + oper);
+            switch (oper){
+                case "lw": String regs = posQuebrada[1].substring(1,3);
+                int tam = posQuebrada[1].length();
+                String pos = posQuebrada[1].substring(4,tam) + posQuebrada[2];
+                register(regs, lw(pos));
+                 break;
+
+                case "sw":  regs = posQuebrada[1].substring(1,3);
+                     tam = posQuebrada[1].length();
+                     pos = posQuebrada[1].substring(4,tam) + posQuebrada[2];
+                    int value = findValue(regs);
+                    sw(regs,pos);
+                    break;
+            }
+            line = reader.readLine();
+        }
+    }
 
     private static int findValue(String name){
+        if( name.startsWith("$")){
+            name = name.substring(1,name.length());
+        }
             switch (name){
                 case "t0": return getT0();
 
@@ -206,7 +286,96 @@ public class Compiler {
 
                 case "a3": return getA3();
             }
-        System.err.println("Entrada inválida");
-        return 0;
+        System.err.println("Entrada inválida na recuperação de valor" );
+        return -1;
+    }
+
+
+    private static void register(String name, int value){
+        if( name.startsWith("$")){
+            name = name.substring(1,name.length());
+        }
+
+        switch (name){
+            case "t0": setT0(value);
+            break;
+
+            case "t1":  setT1(value);
+            break;
+
+            case "t2":  setT2(value);
+            break;
+
+            case "t3":  setT3(value);
+            break;
+
+            case "t4":  setT4(value);
+            break;
+
+            case "t5":  setT5(value);
+                break;
+
+            case "t6":  setT6(value);
+                break;
+
+            case "t7":  getT7();
+                break;
+
+            case "t8":  getT8();
+                break;
+
+            case "t9":  getT9();
+                break;
+
+            case "s0":  getS0();
+                break;
+
+            case "s1":  getS1();
+                break;
+
+            case "s2":  getS2();
+                break;
+
+            case "s3":  getS3();
+                break;
+
+            case "s4":  getS4();
+                break;
+
+            case "s5":  getS5();
+                break;
+
+            case "s6":  getS6();
+                break;
+
+            case "s7":  getS7();
+                break;
+
+            case "zero":  getZero();
+                break;
+
+            case "v0":  getV0();
+                break;
+
+            case "v1":  getV1();
+                break;
+
+            case "a0":  getA0();
+                break;
+
+            case "a1":  getA1();
+                break;
+
+            case "a2":  getA2();
+                break;
+
+            case "a3":  getA3();
+                break;
+
+                default: System.err.println("Entrada inválida no registro");
+                break;
+        }
+
+
     }
 }

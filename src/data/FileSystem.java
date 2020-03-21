@@ -1,11 +1,6 @@
 package data;
 
-import java.io.BufferedReader;
-import java.io.BufferedWriter;
-import java.io.FileInputStream;
-import java.io.FileOutputStream;
-import java.io.FileReader;
-import java.io.FileWriter;
+import java.io.*;
 import java.util.ArrayList;
 import java.util.List;
 import java.util.RandomAccess;
@@ -56,8 +51,21 @@ public class FileSystem {
         }
     }
 
-    public static int acess(int i){
-        return 0;
+    public static  String  acess(String path, int pos) throws IOException {
+            RandomAccessFile raf = new RandomAccessFile(path, "rw");
+            raf.seek(pos);
+            return String.valueOf(raf.read());
+    }
+
+    public static  void  writeWord(String path, int pos, int value)  {
+        try {
+            RandomAccessFile raf = new RandomAccessFile(path, "rw");
+            raf.seek(pos);
+            raf.write(value);
+            raf.close();
+        } catch (Exception e) {
+            e.printStackTrace();
+        }
     }
 
 }
