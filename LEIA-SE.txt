@@ -1,0 +1,6 @@
+Bom dia, boa tarde ou boa noite professor.
+https://github.com/CunhaGuilhermeBR/Compilador-Mips
+Para rodar a aplicação é só usar o comando java -jar <nomedojar>.jar, onde o nome do .jar é compilerMipsGBJ.jar
+Avisos: Se o jar tiver numa pasta diferente dos .txt ele irá dar problema. 
+Se no pior dos casos tudo der errado, a função que tem que ser rodada é a main da classe Main.
+Adiantando e pedindo desculpas que não conseguimos fazer todo o trabalho tendo dificuldade na parte de desvios.
