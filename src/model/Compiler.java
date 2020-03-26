@@ -148,7 +148,14 @@ public class Compiler {
     }
 
     public static int neg(int num){
-        return num - (num*2);
+    	if ( num > 0) {
+    		return num - (num*2);
+    	}
+    	else {
+    		String str = String.valueOf(num);
+    		return Integer.parseInt(str.substring(1));
+    	}
+        
     }
 
     public static int slt(String regs1, String regs2){
